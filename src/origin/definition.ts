@@ -6,5 +6,6 @@
 
 export type SimpleFileSystemOriginPayload = {
 
+    readonly collectionName: string;
     readonly basePath: string;
 };

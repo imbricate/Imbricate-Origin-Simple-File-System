@@ -4,7 +4,7 @@
  * @description Origin
  */
 
-import { IImbricateCollectionManager, IImbricateOrigin, IMBRICATE_DIGEST_ALGORITHM, IMBRICATE_ORIGIN_CAPABILITY_KEY, ImbricateOriginBase, ImbricateOriginCapability, ImbricateOriginMetadata, createDenyImbricateCapability } from "@imbricate/core";
+import { IImbricateCollectionManager, IImbricateOrigin, IMBRICATE_DIGEST_ALGORITHM, IMBRICATE_ORIGIN_CAPABILITY_KEY, ImbricateOriginBase, ImbricateOriginCapability, ImbricateOriginMetadata } from "@imbricate/core";
 import { SimpleFileSystemImbricateCollectionManager } from "../collection-manager.ts/collection-manager";
 import { digestString } from "../util/digest";
 import { SimpleFileSystemOriginPayload } from "./definition";
@@ -25,15 +25,12 @@ export class SimpleFileSystemImbricateOrigin extends ImbricateOriginBase impleme
     };
     public readonly payloads: SimpleFileSystemOriginPayload;
 
-    private readonly _basePath: string;
-
     private constructor(
         payload: SimpleFileSystemOriginPayload,
     ) {
 
         super();
 
-        this._basePath = payload.basePath;
         this.payloads = payload;
     }
 
@@ -41,14 +38,14 @@ export class SimpleFileSystemImbricateOrigin extends ImbricateOriginBase impleme
         return "file-system";
     }
     public get uniqueIdentifier(): string {
-        const hashedPath = digestString(this._basePath);
+        const hashedPath = digestString(this.payloads.basePath);
         return hashedPath;
     }
 
     public get capabilities(): ImbricateOriginCapability {
 
         return ImbricateOriginBase
-            .buildCapability(createDenyImbricateCapability())
+            .buildCapability()
             .allow(IMBRICATE_ORIGIN_CAPABILITY_KEY.ORIGIN_COLLECTION_MANAGER)
             .build();
     }
@@ -56,7 +53,7 @@ export class SimpleFileSystemImbricateOrigin extends ImbricateOriginBase impleme
     public getCollectionManager(): IImbricateCollectionManager {
 
         return SimpleFileSystemImbricateCollectionManager.withBasePath(
-            this._basePath,
+            this.payloads.basePath,
         );
     }
 }
