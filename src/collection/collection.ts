@@ -5,62 +5,39 @@
  */
 
 import { IImbricateCollection, IImbricatePage, IMBRICATE_COLLECTION_CAPABILITY_KEY, ImbricateCollectionBase, ImbricateCollectionCapability, ImbricatePageQuery, ImbricatePageSearchResult, ImbricatePageSnapshot, ImbricateSearchPageConfig } from "@imbricate/core";
-import { FileSystemCollectionMetadataCollection } from "./definition/collection";
-import { FileSystemOriginPayload } from "./definition/origin";
-import { fileSystemGetPage } from "./page/get-page";
-import { fileSystemListDirectoriesPages } from "./page/list-pages";
-import { fileSystemQueryPages } from "./page/query-pages";
-import { fileSystemSearchPages } from "./page/search-pages";
+import { SimpleFileSystemOriginPayload } from "../origin/definition";
 
 export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase implements IImbricateCollection {
 
     public static withConfig(
-        basePath: string,
-        payloads: FileSystemOriginPayload,
-        collection: FileSystemCollectionMetadataCollection,
+        payload: SimpleFileSystemOriginPayload,
     ): SimpleFileSystemImbricateCollection {
 
         return new SimpleFileSystemImbricateCollection(
-            basePath,
-            payloads,
-            collection,
+            payload,
         );
     }
 
-    private readonly _basePath: string;
-    private readonly _payloads: FileSystemOriginPayload;
-
-    private readonly _collectionName: string;
-    private readonly _uniqueIdentifier: string;
-
-    private readonly _description?: string;
+    private readonly _payloads: SimpleFileSystemOriginPayload;
 
     private constructor(
-        basePath: string,
-        payload: FileSystemOriginPayload,
-        collection: FileSystemCollectionMetadataCollection,
+        payload: SimpleFileSystemOriginPayload,
     ) {
 
         super();
 
-        this._basePath = basePath;
         this._payloads = payload;
-
-        this._collectionName = collection.collectionName;
-        this._uniqueIdentifier = collection.uniqueIdentifier;
-
-        this._description = collection.description;
     }
 
     public get collectionName(): string {
-        return this._collectionName;
+        return this._payloads.collectionName;
     }
     public get uniqueIdentifier(): string {
-        return this._uniqueIdentifier;
+        return this._payloads.collectionName;
     }
 
     public get description(): string | undefined {
-        return this._description;
+        return undefined;
     }
 
     public get capabilities(): ImbricateCollectionCapability {
@@ -73,16 +50,11 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
     }
 
     public async listPages(
-        directories: string[],
-        recursive: boolean,
+        _directories: string[],
+        _recursive: boolean,
     ): Promise<ImbricatePageSnapshot[]> {
 
-        return await fileSystemListDirectoriesPages(
-            this._basePath,
-            this._uniqueIdentifier,
-            directories,
-            recursive,
-        );
+        return [];
     }
 
     public async listDirectories(
@@ -92,16 +64,17 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
         return [];
     }
 
-    public async getPage(identifier: string): Promise<IImbricatePage | null> {
+    public async getPage(
+        _identifier: string,
+    ): Promise<IImbricatePage | null> {
 
-        return await fileSystemGetPage(
-            this._basePath,
-            this._uniqueIdentifier,
-            identifier,
-        );
+        return null;
     }
 
-    public async hasPage(directories: string[], title: string): Promise<boolean> {
+    public async hasPage(
+        directories: string[],
+        title: string,
+    ): Promise<boolean> {
 
         const pages: ImbricatePageSnapshot[] = await this.listPages(
             directories,
@@ -114,27 +87,17 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
     }
 
     public async searchPages(
-        keyword: string,
-        config: ImbricateSearchPageConfig,
+        _keyword: string,
+        _config: ImbricateSearchPageConfig,
     ): Promise<ImbricatePageSearchResult[]> {
 
-        return await fileSystemSearchPages(
-            this._basePath,
-            this._uniqueIdentifier,
-            keyword,
-            config,
-            this._payloads,
-        );
+        return [];
     }
 
     public async queryPages(
-        query: ImbricatePageQuery,
+        _query: ImbricatePageQuery,
     ): Promise<IImbricatePage[]> {
 
-        return await fileSystemQueryPages(
-            this._basePath,
-            this._uniqueIdentifier,
-            query,
-        );
+        return [];
     }
 }

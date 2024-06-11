@@ -5,9 +5,6 @@
  */
 
 import { IImbricatePage, IMBRICATE_PAGE_CAPABILITY_KEY, ImbricatePageBase, ImbricatePageCapability, ImbricatePageHistoryRecord } from "@imbricate/core";
-import { readTextFile, writeTextFile } from "@sudoo/io";
-import { ensureCollectionFolder } from "../collection/ensure-collection-folder";
-import { joinCollectionFolderPath } from "../util/path-joiner";
 
 export class SimpleFileSystemImbricatePage extends ImbricatePageBase implements IImbricatePage {
 
@@ -76,33 +73,13 @@ export class SimpleFileSystemImbricatePage extends ImbricatePageBase implements 
 
     public async readContent(): Promise<string> {
 
-        await ensureCollectionFolder(
-            this._basePath,
-            this._collectionUniqueIdentifier,
-        );
-
-        const targetFilePath = joinCollectionFolderPath(
-            this._basePath,
-            this._collectionUniqueIdentifier,
-            this._fixFileNameFromIdentifier(this.identifier),
-        );
-
-        return await readTextFile(targetFilePath);
+        return "";
     }
 
-    public async writeContent(content: string): Promise<void> {
+    public async writeContent(
+        _content: string,
+    ): Promise<void> {
 
-        await ensureCollectionFolder(
-            this._basePath,
-            this._collectionUniqueIdentifier,
-        );
-
-        const targetFilePath = joinCollectionFolderPath(
-            this._basePath,
-            this._collectionUniqueIdentifier,
-            this._fixFileNameFromIdentifier(this.identifier),
-        );
-
-        await writeTextFile(targetFilePath, content);
+        return;
     }
 }
