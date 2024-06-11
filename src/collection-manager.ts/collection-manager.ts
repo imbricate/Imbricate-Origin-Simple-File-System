@@ -5,27 +5,28 @@
  */
 
 import { IImbricateCollection, IImbricateCollectionManager, IMBRICATE_COLLECTION_MANAGER_CAPABILITY_KEY, ImbricateCollectionManagerBase, ImbricateCollectionManagerCapability } from "@imbricate/core";
+import { SimpleFileSystemOriginPayload } from "../origin/definition";
 
 export class SimpleFileSystemImbricateCollectionManager extends ImbricateCollectionManagerBase implements IImbricateCollectionManager {
 
     public static withBasePath(
-        basePath: string,
+        payload: SimpleFileSystemOriginPayload,
     ): SimpleFileSystemImbricateCollectionManager {
 
         return new SimpleFileSystemImbricateCollectionManager(
-            basePath,
+            payload,
         );
     }
 
-    private readonly _basePath: string;
+    private readonly _payloads: SimpleFileSystemOriginPayload;
 
     private constructor(
-        basePath: string,
+        payload: SimpleFileSystemOriginPayload,
     ) {
 
         super();
 
-        this._basePath = basePath;
+        this._payloads = payload;
     }
 
     public get capabilities(): ImbricateCollectionManagerCapability {

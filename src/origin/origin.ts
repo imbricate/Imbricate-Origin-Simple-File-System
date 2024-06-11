@@ -53,7 +53,7 @@ export class SimpleFileSystemImbricateOrigin extends ImbricateOriginBase impleme
     public getCollectionManager(): IImbricateCollectionManager {
 
         return SimpleFileSystemImbricateCollectionManager.withBasePath(
-            this.payloads.basePath,
+            this.payloads,
         );
     }
 }
