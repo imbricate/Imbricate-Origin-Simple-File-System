@@ -4,15 +4,12 @@
  * @description Collection
  */
 
-import { IImbricateCollection, IImbricatePage, ImbricateCollectionBase, ImbricateCollectionCapability, ImbricatePageQuery, ImbricatePageSearchResult, ImbricatePageSnapshot, ImbricateSearchPageConfig } from "@imbricate/core";
+import { IImbricateCollection, IImbricatePage, IMBRICATE_COLLECTION_CAPABILITY_KEY, ImbricateCollectionBase, ImbricateCollectionCapability, ImbricatePageQuery, ImbricatePageSearchResult, ImbricatePageSnapshot, ImbricateSearchPageConfig } from "@imbricate/core";
 import { FileSystemCollectionMetadataCollection } from "./definition/collection";
 import { FileSystemOriginPayload } from "./definition/origin";
-import { fileSystemCreatePage } from "./page/create-page";
-import { fileSystemDeletePage } from "./page/delete-page";
 import { fileSystemGetPage } from "./page/get-page";
 import { fileSystemListDirectoriesPages } from "./page/list-pages";
 import { fileSystemQueryPages } from "./page/query-pages";
-import { fileSystemRetitlePage } from "./page/retitle-page";
 import { fileSystemSearchPages } from "./page/search-pages";
 
 export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase implements IImbricateCollection {
@@ -70,6 +67,8 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
 
         return ImbricateCollectionBase
             .buildCapability()
+            .allow(IMBRICATE_COLLECTION_CAPABILITY_KEY.GET_PAGE)
+            .allow(IMBRICATE_COLLECTION_CAPABILITY_KEY.LIST_PAGES)
             .build();
     }
 
@@ -91,45 +90,6 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
     ): Promise<string[]> {
 
         return [];
-    }
-
-    public async createPage(
-        directories: string[],
-        title: string,
-        initialContent: string,
-    ): Promise<IImbricatePage> {
-
-        return await fileSystemCreatePage(
-            this._basePath,
-            this._uniqueIdentifier,
-            directories,
-            title,
-            initialContent,
-        );
-    }
-
-    public async retitlePage(
-        identifier: string,
-        newTitle: string,
-    ): Promise<void> {
-
-        return await fileSystemRetitlePage(
-            this._basePath,
-            this._uniqueIdentifier,
-            identifier,
-            newTitle,
-        );
-    }
-
-    public async deletePage(
-        identifier: string,
-    ): Promise<void> {
-
-        return await fileSystemDeletePage(
-            this._basePath,
-            this._uniqueIdentifier,
-            identifier,
-        );
     }
 
     public async getPage(identifier: string): Promise<IImbricatePage | null> {
