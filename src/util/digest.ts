@@ -15,11 +15,3 @@ export const digestBuffer = (input: Buffer): string => {
 
     return createHash("sha1").update(input).digest("hex");
 };
-
-export const digestPage = (
-    directories: string[],
-    fileName: string,
-): string => {
-
-    return digestString([...directories, fileName].join("/"));
-};
