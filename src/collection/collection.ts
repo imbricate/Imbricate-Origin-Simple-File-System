@@ -5,7 +5,9 @@
  */
 
 import { IImbricateCollection, IImbricatePage, IMBRICATE_COLLECTION_CAPABILITY_KEY, ImbricateCollectionBase, ImbricateCollectionCapability, ImbricatePageQuery, ImbricatePageSearchResult, ImbricatePageSnapshot, ImbricateSearchPageConfig } from "@imbricate/core";
+import { directoryFiles, isFile, isFolder, joinPath, pathExists } from "@sudoo/io";
 import { SimpleFileSystemOriginPayload } from "../origin/definition";
+import { digestPage } from "../util/digest";
 
 export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase implements IImbricateCollection {
 
@@ -50,11 +52,52 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
     }
 
     public async listPages(
-        _directories: string[],
-        _recursive: boolean,
+        directories: string[],
+        recursive: boolean,
     ): Promise<ImbricatePageSnapshot[]> {
 
-        return [];
+        const targetFolder = joinPath(this._payloads.basePath, ...directories);
+
+        const pathExistResult: boolean = await pathExists(targetFolder);
+        if (!pathExistResult) {
+            return [];
+        }
+
+        const isFolderResult: boolean = await isFolder(targetFolder);
+        if (!isFolderResult) {
+            return [];
+        }
+
+        const files: string[] = await directoryFiles(targetFolder);
+
+        const result: ImbricatePageSnapshot[] = [];
+        for (const file of files) {
+
+            const filePath: string = joinPath(targetFolder, file);
+            const isFileResult: boolean = await isFile(filePath);
+
+            if (isFileResult) {
+
+                result.push({
+                    title: file,
+                    directories,
+                    identifier: digestPage(directories, file),
+                });
+            } else {
+
+                if (recursive) {
+
+                    const subDirectories: string[] = [...directories, file];
+                    const subResult: ImbricatePageSnapshot[] = await this.listPages(
+                        subDirectories,
+                        recursive,
+                    );
+                    result.push(...subResult);
+                }
+            }
+        }
+
+        return result;
     }
 
     public async listDirectories(
@@ -75,6 +118,7 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
         directories: string[],
         title: string,
     ): Promise<boolean> {
+
 
         const pages: ImbricatePageSnapshot[] = await this.listPages(
             directories,
