@@ -5,6 +5,7 @@
  */
 
 import { IImbricateCollection, IImbricateCollectionManager, IMBRICATE_COLLECTION_MANAGER_CAPABILITY_KEY, ImbricateCollectionManagerBase, ImbricateCollectionManagerCapability } from "@imbricate/core";
+import { SimpleFileSystemImbricateCollection } from "../collection/collection";
 import { SimpleFileSystemOriginPayload } from "../origin/definition";
 
 export class SimpleFileSystemImbricateCollectionManager extends ImbricateCollectionManagerBase implements IImbricateCollectionManager {
@@ -41,24 +42,33 @@ export class SimpleFileSystemImbricateCollectionManager extends ImbricateCollect
         collectionName: string,
     ): Promise<boolean> {
 
-        return collectionName === "Test";
+        return collectionName === this._payloads.collectionName;
     }
 
     public async findCollection(
         collectionName: string,
     ): Promise<IImbricateCollection | null> {
 
-        if (collectionName === "Test") {
-            console.log("Found collection");
-            return null;
+        if (collectionName === this._payloads.collectionName) {
+
+            return SimpleFileSystemImbricateCollection.withConfig(
+                this._payloads,
+            );
         }
 
         return null;
     }
 
     public async getCollection(
-        _collectionUniqueIdentifier: string,
+        collectionUniqueIdentifier: string,
     ): Promise<IImbricateCollection | null> {
+
+        if (collectionUniqueIdentifier === this._payloads.collectionName) {
+
+            return SimpleFileSystemImbricateCollection.withConfig(
+                this._payloads,
+            );
+        }
 
         return null;
     }
