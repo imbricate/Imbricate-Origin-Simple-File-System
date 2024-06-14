@@ -5,7 +5,7 @@
  */
 
 import { IImbricateCollectionManager, IImbricateOrigin, IMBRICATE_DIGEST_ALGORITHM, IMBRICATE_ORIGIN_CAPABILITY_KEY, ImbricateOriginBase, ImbricateOriginCapability, ImbricateOriginMetadata } from "@imbricate/core";
-import { SimpleFileSystemImbricateCollectionManager } from "../collection-manager.ts/collection-manager";
+import { SimpleFileSystemImbricateCollectionManager } from "../collection-manager/collection-manager";
 import { digestString } from "../util/digest";
 import { SimpleFileSystemOriginPayload } from "./definition";
 
