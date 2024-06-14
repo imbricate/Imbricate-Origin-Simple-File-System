@@ -72,17 +72,23 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
         const files: string[] = await directoryFiles(targetFolder);
 
         const result: ImbricatePageSnapshot[] = [];
-        for (const file of files) {
+        files: for (const file of files) {
 
             const filePath: string = joinPath(targetFolder, file);
             const isFileResult: boolean = await isFile(filePath);
 
             if (isFileResult) {
 
+                if (!file.endsWith(".md")) {
+                    continue files;
+                }
+
+                const title: string = file.substring(0, file.length - 3);
+
                 result.push({
-                    title: file,
+                    title,
                     directories,
-                    identifier: digestPageIdentifier(directories, file),
+                    identifier: digestPageIdentifier(directories, title),
                 });
             } else {
 
