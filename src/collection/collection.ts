@@ -5,8 +5,9 @@
  */
 
 import { IImbricateCollection, IImbricatePage, IMBRICATE_COLLECTION_CAPABILITY_KEY, ImbricateCollectionBase, ImbricateCollectionCapability, ImbricatePageQuery, ImbricatePageSearchResult, ImbricatePageSnapshot, ImbricateSearchPageConfig } from "@imbricate/core";
-import { directoryFiles, isFile, isFolder, joinPath, pathExists } from "@sudoo/io";
+import { attemptMarkDir, directoryFiles, isFile, isFolder, joinPath, pathExists, writeTextFile } from "@sudoo/io";
 import { SimpleFileSystemOriginPayload } from "../origin/definition";
+import { SimpleFileSystemImbricatePage } from "../page/page";
 import { PageIdentifier, digestPageIdentifier, extractPageIdentifier } from "../util/identifier";
 
 export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase implements IImbricateCollection {
@@ -136,13 +137,25 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
         identifier: string,
     ): Promise<IImbricatePage | null> {
 
-        console.log(identifier, "get page");
-
         const extracted: PageIdentifier = extractPageIdentifier(identifier);
 
-        console.log(extracted);
+        const targetFolder = joinPath(this._payloads.basePath, ...extracted.directories);
 
-        return null;
+        const pathExistResult: boolean = await pathExists(targetFolder);
+        if (!pathExistResult) {
+            return null;
+        }
+
+        const isFolderResult: boolean = await isFolder(targetFolder);
+        if (!isFolderResult) {
+            return null;
+        }
+
+        return SimpleFileSystemImbricatePage.create(
+            this._payloads.basePath,
+            extracted.directories,
+            extracted.fileName,
+        );
     }
 
     public async hasPage(
@@ -158,6 +171,38 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
         return pages.some((page: ImbricatePageSnapshot) => {
             return page.title === title;
         });
+    }
+
+    public async createPage(
+        directories: string[],
+        title: string,
+        initialContent: string,
+    ): Promise<IImbricatePage> {
+
+        for (let i = 0; i < directories.length; i++) {
+
+            const currentFolder: string = joinPath(
+                this._payloads.basePath,
+                ...directories.slice(0, i + 1),
+            );
+
+            await attemptMarkDir(currentFolder);
+        }
+
+        const fixedFileName: string = `${title}.md`;
+        const targetFile: string = joinPath(
+            this._payloads.basePath,
+            ...directories,
+            fixedFileName,
+        );
+
+        await writeTextFile(targetFile, initialContent);
+
+        return SimpleFileSystemImbricatePage.create(
+            this._payloads.basePath,
+            directories,
+            title,
+        );
     }
 
     public async searchPages(

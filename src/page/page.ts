@@ -5,6 +5,7 @@
  */
 
 import { IImbricatePage, IMBRICATE_PAGE_CAPABILITY_KEY, ImbricatePageBase, ImbricatePageCapability, ImbricatePageHistoryRecord } from "@imbricate/core";
+import { joinPath, readTextFile, writeTextFile } from "@sudoo/io";
 
 export class SimpleFileSystemImbricatePage extends ImbricatePageBase implements IImbricatePage {
 
@@ -73,12 +74,30 @@ export class SimpleFileSystemImbricatePage extends ImbricatePageBase implements 
 
     public async readContent(): Promise<string> {
 
-        return "";
+        const fixedFileName: string = `${this._fileName}.md`;
+        const targetFile: string = joinPath(
+            this._basePath,
+            ...this._directories,
+            fixedFileName,
+        );
+
+        const fileContent = await readTextFile(targetFile);
+
+        return fileContent;
     }
 
     public async writeContent(
-        _content: string,
+        content: string,
     ): Promise<void> {
+
+        const fixedFileName: string = `${this._fileName}.md`;
+        const targetFile: string = joinPath(
+            this._basePath,
+            ...this._directories,
+            fixedFileName,
+        );
+
+        await writeTextFile(targetFile, content);
 
         return;
     }
