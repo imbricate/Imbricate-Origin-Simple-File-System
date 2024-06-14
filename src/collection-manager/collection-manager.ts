@@ -75,6 +75,10 @@ export class SimpleFileSystemImbricateCollectionManager extends ImbricateCollect
 
     public async listCollections(): Promise<IImbricateCollection[]> {
 
-        return [];
+        return [
+            SimpleFileSystemImbricateCollection.withConfig(
+                this._payloads,
+            ),
+        ];
     }
 }

@@ -136,6 +136,8 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
         identifier: string,
     ): Promise<IImbricatePage | null> {
 
+        console.log(identifier, "get page");
+
         const extracted: PageIdentifier = extractPageIdentifier(identifier);
 
         console.log(extracted);
