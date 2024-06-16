@@ -1,7 +1,7 @@
 {
   "name": "@imbricate/origin-simple-file-system",
   "packageManager": "yarn@4.1.1",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Simple File System Origin for Imbricate",
   "scripts": {
     "test": "jest",
