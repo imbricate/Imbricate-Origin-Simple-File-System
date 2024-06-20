@@ -6,37 +6,37 @@
 
 import { IImbricateCollection, IImbricatePage, IMBRICATE_COLLECTION_CAPABILITY_KEY, ImbricateCollectionBase, ImbricateCollectionCapability, ImbricatePageQuery, ImbricatePageSearchResult, ImbricatePageSnapshot, ImbricateSearchPageConfig } from "@imbricate/core";
 import { attemptMarkDir, directoryFiles, isFile, isFolder, joinPath, pathExists, writeTextFile } from "@sudoo/io";
-import { SimpleFileSystemOriginPayload } from "../origin/definition";
+import { SimpleFileSystemOriginPayloadCollection } from "../origin/definition";
 import { SimpleFileSystemImbricatePage } from "../page/page";
 import { PageIdentifier, digestPageIdentifier, extractPageIdentifier } from "../util/identifier";
 
 export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase implements IImbricateCollection {
 
     public static withConfig(
-        payload: SimpleFileSystemOriginPayload,
+        collection: SimpleFileSystemOriginPayloadCollection,
     ): SimpleFileSystemImbricateCollection {
 
         return new SimpleFileSystemImbricateCollection(
-            payload,
+            collection,
         );
     }
 
-    private readonly _payloads: SimpleFileSystemOriginPayload;
+    private readonly _collection: SimpleFileSystemOriginPayloadCollection;
 
     private constructor(
-        payload: SimpleFileSystemOriginPayload,
+        collection: SimpleFileSystemOriginPayloadCollection,
     ) {
 
         super();
 
-        this._payloads = payload;
+        this._collection = collection;
     }
 
     public get collectionName(): string {
-        return this._payloads.collectionName;
+        return this._collection.collectionName;
     }
     public get uniqueIdentifier(): string {
-        return this._payloads.collectionName;
+        return this._collection.collectionName;
     }
 
     public get description(): string | undefined {
@@ -57,7 +57,7 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
         recursive: boolean,
     ): Promise<ImbricatePageSnapshot[]> {
 
-        const targetFolder = joinPath(this._payloads.basePath, ...directories);
+        const targetFolder = joinPath(this._collection.basePath, ...directories);
 
         const pathExistResult: boolean = await pathExists(targetFolder);
         if (!pathExistResult) {
@@ -111,7 +111,7 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
         directories: string[],
     ): Promise<string[]> {
 
-        const targetFolder = joinPath(this._payloads.basePath, ...directories);
+        const targetFolder = joinPath(this._collection.basePath, ...directories);
 
         const pathExistResult: boolean = await pathExists(targetFolder);
         if (!pathExistResult) {
@@ -145,7 +145,7 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
 
         const extracted: PageIdentifier = extractPageIdentifier(identifier);
 
-        const targetFolder = joinPath(this._payloads.basePath, ...extracted.directories);
+        const targetFolder = joinPath(this._collection.basePath, ...extracted.directories);
 
         const pathExistResult: boolean = await pathExists(targetFolder);
         if (!pathExistResult) {
@@ -158,7 +158,7 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
         }
 
         return SimpleFileSystemImbricatePage.create(
-            this._payloads.basePath,
+            this._collection.basePath,
             extracted.directories,
             extracted.fileName,
         );
@@ -188,7 +188,7 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
         for (let i = 0; i < directories.length; i++) {
 
             const currentFolder: string = joinPath(
-                this._payloads.basePath,
+                this._collection.basePath,
                 ...directories.slice(0, i + 1),
             );
 
@@ -197,7 +197,7 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
 
         const fixedFileName: string = `${title}.md`;
         const targetFile: string = joinPath(
-            this._payloads.basePath,
+            this._collection.basePath,
             ...directories,
             fixedFileName,
         );
@@ -205,7 +205,7 @@ export class SimpleFileSystemImbricateCollection extends ImbricateCollectionBase
         await writeTextFile(targetFile, initialContent);
 
         return SimpleFileSystemImbricatePage.create(
-            this._payloads.basePath,
+            this._collection.basePath,
             directories,
             title,
         );

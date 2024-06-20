@@ -6,7 +6,7 @@
 
 import { IImbricateCollection, IImbricateCollectionManager, IMBRICATE_COLLECTION_MANAGER_CAPABILITY_KEY, ImbricateCollectionManagerBase, ImbricateCollectionManagerCapability } from "@imbricate/core";
 import { SimpleFileSystemImbricateCollection } from "../collection/collection";
-import { SimpleFileSystemOriginPayload } from "../origin/definition";
+import { SimpleFileSystemOriginPayload, SimpleFileSystemOriginPayloadCollection } from "../origin/definition";
 
 export class SimpleFileSystemImbricateCollectionManager extends ImbricateCollectionManagerBase implements IImbricateCollectionManager {
 
@@ -42,18 +42,25 @@ export class SimpleFileSystemImbricateCollectionManager extends ImbricateCollect
         collectionName: string,
     ): Promise<boolean> {
 
-        return collectionName === this._payloads.collectionName;
+        const collections: SimpleFileSystemOriginPayloadCollection[] = this._payloads.collections;
+
+        return collections.some((
+            collection: SimpleFileSystemOriginPayloadCollection,
+        ) => {
+            return collection.collectionName === collectionName;
+        });
     }
 
     public async findCollection(
         collectionName: string,
     ): Promise<IImbricateCollection | null> {
 
-        if (collectionName === this._payloads.collectionName) {
+        const collections: SimpleFileSystemOriginPayloadCollection[] = this._payloads.collections;
 
-            return SimpleFileSystemImbricateCollection.withConfig(
-                this._payloads,
-            );
+        for (const collection of collections) {
+            if (collection.collectionName === collectionName) {
+                return SimpleFileSystemImbricateCollection.withConfig(collection);
+            }
         }
 
         return null;
@@ -63,11 +70,12 @@ export class SimpleFileSystemImbricateCollectionManager extends ImbricateCollect
         collectionUniqueIdentifier: string,
     ): Promise<IImbricateCollection | null> {
 
-        if (collectionUniqueIdentifier === this._payloads.collectionName) {
+        const collections: SimpleFileSystemOriginPayloadCollection[] = this._payloads.collections;
 
-            return SimpleFileSystemImbricateCollection.withConfig(
-                this._payloads,
-            );
+        for (const collection of collections) {
+            if (collection.collectionName === collectionUniqueIdentifier) {
+                return SimpleFileSystemImbricateCollection.withConfig(collection);
+            }
         }
 
         return null;
@@ -75,10 +83,10 @@ export class SimpleFileSystemImbricateCollectionManager extends ImbricateCollect
 
     public async listCollections(): Promise<IImbricateCollection[]> {
 
-        return [
-            SimpleFileSystemImbricateCollection.withConfig(
-                this._payloads,
-            ),
-        ];
+        return this._payloads.collections.map((
+            collection: SimpleFileSystemOriginPayloadCollection,
+        ) => {
+            return SimpleFileSystemImbricateCollection.withConfig(collection);
+        });
     }
 }
