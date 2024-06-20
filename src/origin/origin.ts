@@ -35,10 +35,12 @@ export class SimpleFileSystemImbricateOrigin extends ImbricateOriginBase impleme
     }
 
     public get originType(): string {
+
         return "file-system";
     }
     public get uniqueIdentifier(): string {
-        const hashedPath = digestString(this.payloads.basePath);
+
+        const hashedPath = digestString(this.payloads.uniqueIdentifier);
         return hashedPath;
     }
 

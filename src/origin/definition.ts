@@ -4,8 +4,14 @@
  * @description Definition
  */
 
-export type SimpleFileSystemOriginPayload = {
+export type SimpleFileSystemOriginPayloadCollection = {
 
     readonly collectionName: string;
     readonly basePath: string;
+};
+
+export type SimpleFileSystemOriginPayload = {
+
+    readonly uniqueIdentifier: string;
+    readonly collections: SimpleFileSystemOriginPayloadCollection[];
 };
